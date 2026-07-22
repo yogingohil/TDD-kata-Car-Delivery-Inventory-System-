@@ -15,12 +15,21 @@ const app: Application = express();
 // Security & Parsing Middlewares
 app.use(helmet());
 app.use(requestIdMiddleware);
+
+// Permissive Cross-Origin Resource Sharing (CORS) for Vercel & Production Clients
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin || origin.includes('vercel.app') || origin.includes('localhost') || origin === env.CLIENT_URL) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
