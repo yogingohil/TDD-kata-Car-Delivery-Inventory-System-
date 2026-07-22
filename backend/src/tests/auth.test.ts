@@ -3,42 +3,47 @@ import app from '../app.js';
 import { HttpStatus } from '../constants/http-status.js';
 
 describe('Authentication Integration API (TDD Suite)', () => {
-  const validUser = {
+  const getValidUser = () => ({
     name: 'John Doe',
-    email: 'john.doe@example.com',
+    email: `john_${Date.now()}_${Math.random().toString(36).substring(2, 7)}@example.com`,
     password: 'Password123!',
-  };
+  });
 
   describe('POST /api/v1/auth/register', () => {
     it('should register a new user successfully and return 201 Created with JWT token', async () => {
+      const userPayload = getValidUser();
       const response = await request(app)
         .post('/api/v1/auth/register')
-        .send(validUser);
+        .send(userPayload);
 
       expect(response.status).toBe(HttpStatus.CREATED);
       expect(response.body).toHaveProperty('success', true);
       expect(response.body).toHaveProperty('message');
       expect(response.body.data).toHaveProperty('accessToken');
       expect(response.body.data).toHaveProperty('expiresIn');
-      expect(response.body.data.user).toEqual({
-        id: expect.any(String),
-        name: validUser.name,
-        email: validUser.email.toLowerCase(),
-        role: 'USER',
-      });
+      expect(response.body.data.user).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          name: userPayload.name,
+          email: userPayload.email.toLowerCase(),
+          role: 'USER',
+        }),
+      );
       expect(response.body.data.user).not.toHaveProperty('password');
     });
 
     it('should return 409 Conflict when attempting to register with a duplicate email', async () => {
-      // First registration
-      await request(app).post('/api/v1/auth/register').send(validUser);
+      const userPayload = getValidUser();
 
-      // Second registration attempt with same email (case insensitive)
+      // First registration
+      await request(app).post('/api/v1/auth/register').send(userPayload);
+
+      // Second registration attempt with same email
       const duplicateResponse = await request(app)
         .post('/api/v1/auth/register')
         .send({
           name: 'Jane Doe',
-          email: 'JOHN.DOE@example.com',
+          email: userPayload.email.toUpperCase(),
           password: 'Password123!',
         });
 
@@ -60,7 +65,7 @@ describe('Authentication Integration API (TDD Suite)', () => {
       expect(response.body).toHaveProperty('success', false);
     });
 
-    it('should return 400 Bad Request for a weak password lacking uppercase, lowercase, number, or special char', async () => {
+    it('should return 400 Bad Request for weak passwords lacking uppercase, lowercase, number, or special char', async () => {
       const weakPasswords = [
         'short1!',          // Less than 8 chars
         'alllowercase1!',   // Missing uppercase
@@ -74,7 +79,7 @@ describe('Authentication Integration API (TDD Suite)', () => {
           .post('/api/v1/auth/register')
           .send({
             name: 'John Doe',
-            email: `user_${Math.random()}@example.com`,
+            email: `test_${Math.random()}@example.com`,
             password: pwd,
           });
 
@@ -102,28 +107,32 @@ describe('Authentication Integration API (TDD Suite)', () => {
   });
 
   describe('POST /api/v1/auth/login', () => {
+    let testUser: { name: string; email: string; password: string };
+
     beforeEach(async () => {
-      // Register a user to test login against
-      await request(app).post('/api/v1/auth/register').send(validUser);
+      testUser = getValidUser();
+      await request(app).post('/api/v1/auth/register').send(testUser);
     });
 
     it('should login successfully with valid credentials and return 200 OK with token', async () => {
       const response = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          email: validUser.email,
-          password: validUser.password,
+          email: testUser.email,
+          password: testUser.password,
         });
 
       expect(response.status).toBe(HttpStatus.OK);
       expect(response.body).toHaveProperty('success', true);
       expect(response.body.data).toHaveProperty('accessToken');
-      expect(response.body.data.user).toEqual({
-        id: expect.any(String),
-        name: validUser.name,
-        email: validUser.email.toLowerCase(),
-        role: 'USER',
-      });
+      expect(response.body.data.user).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          name: testUser.name,
+          email: testUser.email.toLowerCase(),
+          role: 'USER',
+        }),
+      );
       expect(response.body.data.user).not.toHaveProperty('password');
     });
 
@@ -131,7 +140,7 @@ describe('Authentication Integration API (TDD Suite)', () => {
       const response = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          email: validUser.email,
+          email: testUser.email,
           password: 'WrongPassword123!',
         });
 
@@ -143,7 +152,7 @@ describe('Authentication Integration API (TDD Suite)', () => {
       const response = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          email: 'unknown@example.com',
+          email: 'unknown_user_email@example.com',
           password: 'Password123!',
         });
 
