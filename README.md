@@ -6,19 +6,123 @@ An enterprise-grade, production-ready Luxury Car Delivery & Inventory Management
 
 ## 🌟 Live Production Links & Evaluator Credentials
 
-- 📁 **GitHub Repository**: [https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-](https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-)
 - ⚡ **Live Production Backend (Render)**: [https://tdd-kata-car-delivery-inventory-system-1.onrender.com](https://tdd-kata-car-delivery-inventory-system-1.onrender.com)
 - 📜 **Interactive Swagger API Documentation**: [https://tdd-kata-car-delivery-inventory-system-1.onrender.com/api-docs](https://tdd-kata-car-delivery-inventory-system-1.onrender.com/api-docs)
+- 📁 **GitHub Repository**: [https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-](https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-)
 
 ### 🔐 Evaluator Demo Accounts for Testing
-| Role | Email | Password | Access Rights |
+| Role | Email | Password | Access Capabilities |
 | :--- | :--- | :--- | :--- |
 | **Customer User** | `yogin@example.com` | `Password123!` | Catalog, Delivery Tracking, PDF Invoices, EMI Calculator, Comparison, Test Drive Booking |
-| **Administrator** | `admin@example.com` | `AdminPassword123!` | Fleet Management, Add/Edit Vehicle Specs, Restock, Test Drive Schedule Manager, Inventory Analytics |
+| **Administrator** | `admin@example.com` | `AdminPassword123!` | Fleet Management, Add/Edit Vehicle Specs, Restock, Test Drive Schedule Manager, Analytics |
 
 ---
 
-## ✨ Features & Architecture Highlights
+## 🏛️ System Architecture Diagram
+
+```mermaid
+graph TD
+    Client[React 19 + Vite Frontend SPA] -->|HTTPS / REST API| CORS[Express CORS & Security Middleware]
+    CORS --> AuthMW[JWT Authentication & RBAC Middleware]
+    AuthMW --> Router[Express Central Route Pipeline]
+    
+    subgraph Controller Layer
+        Router --> AuthCtrl[Auth Controller]
+        Router --> VehCtrl[Vehicle Controller]
+        Router --> PurCtrl[Purchase Controller]
+        Router --> TDCtrl[Test Drive Controller]
+    end
+
+    subgraph Service Business Logic Layer
+        AuthCtrl --> AuthService[Auth Service]
+        VehCtrl --> VehService[Vehicle Service]
+        PurCtrl --> PurService[Purchase Service]
+        TDCtrl --> TDService[Test Drive Service]
+    end
+
+    subgraph Repository Data Access Layer
+        AuthService --> UserRepo[User Repository]
+        VehService --> VehRepo[Vehicle Repository]
+        PurService --> PurRepo[Purchase Repository]
+        TDService --> TDRepo[Test Drive Repository]
+        
+        UserRepo --> BaseRepo[Generic Base Repository]
+        VehRepo --> BaseRepo
+        PurRepo --> BaseRepo
+        TDRepo --> BaseRepo
+    end
+
+    subgraph Database Layer
+        BaseRepo -->|Mongoose 8 ORM| MongoDB[(MongoDB Atlas Cluster)]
+    end
+```
+
+---
+
+## 🗄️ Entity-Relationship (ER) Database Diagram
+
+```mermaid
+erDiagram
+    USER ||--o{ PURCHASE : places
+    USER ||--o{ TEST_DRIVE : schedules
+    VEHICLE ||--o{ PURCHASE : purchased_in
+    VEHICLE ||--o{ TEST_DRIVE : booked_for
+
+    USER {
+        string _id PK
+        string name
+        string email UK
+        string password
+        enum role "USER | ADMIN"
+        date createdAt
+    }
+
+    VEHICLE {
+        string _id PK
+        string make
+        string model
+        number year
+        string category
+        string fuelType
+        string transmission
+        string color
+        string vin UK
+        number mileage
+        string engineCapacity
+        number price
+        number quantity
+        string image
+        string description
+        enum status "AVAILABLE | LOW_STOCK | OUT_OF_STOCK"
+    }
+
+    PURCHASE {
+        string _id PK
+        string userId FK
+        string vehicleId FK
+        number quantity
+        number unitPrice
+        number totalPrice
+        enum status "COMPLETED | CANCELLED"
+        date purchaseDate
+    }
+
+    TEST_DRIVE {
+        string _id PK
+        string userId FK
+        string vehicleId FK
+        date preferredDate
+        string preferredTimeSlot
+        enum type "SHOWROOM_VISIT | HOME_DELIVERY"
+        string contactPhone
+        string deliveryAddress
+        enum status "PENDING | CONFIRMED | COMPLETED | CANCELLED"
+    }
+```
+
+---
+
+## ✨ Features Summary
 
 ### 🚚 1. Real-Time Vehicle Order Delivery Tracker
 - Interactive 5-stage live progress timeline modal (`Order Confirmed` $\rightarrow$ `PDI Inspection` $\rightarrow$ `Transit` $\rightarrow$ `Out for Delivery` $\rightarrow$ `Delivered`).
@@ -40,7 +144,7 @@ An enterprise-grade, production-ready Luxury Car Delivery & Inventory Management
 
 ---
 
-## 🏛️ Clean Architecture & SOLID Principles
+## 📂 Project Folder Structure
 
 ```
 project-root
@@ -56,7 +160,7 @@ project-root
 │       ├── repositories    # Generic Base Repository & Entity Repositories
 │       ├── routes          # Express Central Router Pipeline with Fail-Safe Fallbacks
 │       ├── services        # Domain Business Logic Layer
-│       ├── tests           # 100% Passing Unit & Integration Test Suites
+│       ├── tests           # 100% Passing Unit & Integration Test Suites (40/40 Passed)
 │       ├── utils           # ApiResponse, JwtUtil, PasswordUtil, AppError, Logger, Seed
 │       └── validators      # Zod Schema Validation Rules
 │
@@ -71,7 +175,10 @@ project-root
         └── types           # Shared TypeScript Interfaces
 ```
 
-### SOLID Principles Implementation:
+---
+
+## 🏛️ SOLID Principles Implementation
+
 1. **Single Responsibility Principle (SRP)**: Controllers handle HTTP translation, Services execute business logic, and Repositories handle database persistence.
 2. **Open/Closed Principle (OCP)**: BaseRepository interface allows extending storage mechanisms without altering domain services.
 3. **Liskov Substitution Principle (LSP)**: All derived entity repositories satisfy base interfaces cleanly.

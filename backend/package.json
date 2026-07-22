@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "seed": "tsx src/utils/seed.ts",
-    "build": "npm install && tsc",
+    "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest --detectOpenHandles --forceExit",
     "test:watch": "jest --watch",
