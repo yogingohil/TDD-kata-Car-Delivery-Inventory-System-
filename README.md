@@ -152,6 +152,3 @@ npm run dev:frontend
 ```
 
 ---
-
-## 📄 License
-This repository is engineered as part of the technical assessment for **Incubyte**.
