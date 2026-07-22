@@ -223,7 +223,10 @@ export const Inventory: React.FC = () => {
                 min={1}
                 max={selectedVehicle.quantity}
                 value={purchaseQuantity}
-                onChange={(e) => setPurchaseQuantity(parseInt(e.target.value) || 1)}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 1;
+                  setPurchaseQuantity(Math.max(1, Math.min(selectedVehicle.quantity, val)));
+                }}
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
               />
             </div>
@@ -242,9 +245,16 @@ export const Inventory: React.FC = () => {
               <button
                 disabled={purchasing}
                 onClick={handlePurchase}
-                className="flex-1 py-3 font-bold rounded-xl text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25"
+                className="flex-1 py-3 font-bold rounded-xl text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
               >
-                {purchasing ? 'Processing...' : 'Confirm Order'}
+                {purchasing ? (
+                  <>
+                    <span className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <span>Confirm Order</span>
+                )}
               </button>
             </div>
           </div>

@@ -61,11 +61,14 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
+  const [deletingVehicle, setDeletingVehicle] = useState<IVehicle | null>(null);
+
+  const confirmDelete = async () => {
+    if (!deletingVehicle) return;
     try {
-      await vehicleService.deleteVehicle(id);
-      addToast('Vehicle deleted successfully', 'info');
+      await vehicleService.deleteVehicle(deletingVehicle._id);
+      addToast(`Vehicle ${deletingVehicle.make} ${deletingVehicle.model} deleted successfully!`, 'info');
+      setDeletingVehicle(null);
       refetchVehicles();
       refetchAnalytics();
     } catch (err: any) {
@@ -327,7 +330,7 @@ export const AdminDashboard: React.FC = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(v._id)}
+                      onClick={() => setDeletingVehicle(v)}
                       className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20"
                     >
                       Delete
@@ -339,6 +342,42 @@ export const AdminDashboard: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal Dialog */}
+      {deletingVehicle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="max-w-md w-full p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center text-2xl font-bold">
+              ⚠️
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-xl font-bold text-white">Delete Vehicle Confirmation</h3>
+              <p className="text-sm text-slate-300">
+                Are you sure you want to permanently delete{' '}
+                <span className="font-bold text-white">
+                  {deletingVehicle.make} {deletingVehicle.model} ({deletingVehicle.year})
+                </span>{' '}
+                from inventory? This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setDeletingVehicle(null)}
+                className="flex-1 py-2.5 font-semibold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 py-2.5 font-bold rounded-xl text-white bg-rose-600 hover:bg-rose-500 shadow-lg shadow-rose-600/25 text-sm"
+              >
+                Yes, Delete Vehicle
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Restock Modal */}
       {selectedVehicle && (

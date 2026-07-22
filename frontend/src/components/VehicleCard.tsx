@@ -131,9 +131,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
             <button
               disabled={vehicle.quantity === 0}
               onClick={() => onPurchase(vehicle)}
-              className="px-4 py-2 text-xs font-bold rounded-xl text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-md shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="px-4 py-2 text-xs font-bold rounded-xl text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-md shadow-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:from-slate-800 disabled:to-slate-900 border border-transparent disabled:border-slate-800 transition-all"
             >
-              Purchase
+              {vehicle.quantity === 0 ? 'Out of Stock' : 'Purchase'}
             </button>
           )}
         </div>
