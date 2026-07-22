@@ -2,9 +2,21 @@ import { IUser } from './user.interface.js';
 import { IVehicle } from './vehicle.interface.js';
 import { IPurchase } from './purchase.interface.js';
 
+export interface AuthResultPayload {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    createdAt?: Date;
+  };
+  accessToken: string;
+  expiresIn: string;
+}
+
 export interface IAuthService {
-  register(userData: Partial<IUser>): Promise<{ user: Partial<IUser>; token: string }>;
-  login(email: string, password: string): Promise<{ user: Partial<IUser>; token: string }>;
+  register(userData: Partial<IUser>): Promise<AuthResultPayload>;
+  login(email: string, password: string): Promise<AuthResultPayload>;
 }
 
 export interface IVehicleService {

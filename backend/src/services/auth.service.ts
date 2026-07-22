@@ -3,6 +3,21 @@ import { IUserRepository } from '../interfaces/repository.interface.js';
 import { IUser } from '../interfaces/user.interface.js';
 import { AppError } from '../utils/app-error.js';
 import { HttpStatus } from '../constants/http-status.js';
+import { PasswordUtil } from '../utils/password.util.js';
+import { JwtUtil } from '../utils/jwt.util.js';
+import { env } from '../config/env.config.js';
+
+export interface AuthResultPayload {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    createdAt?: Date;
+  };
+  accessToken: string;
+  expiresIn: string;
+}
 
 export class AuthService implements IAuthService {
   constructor(private readonly userRepository: IUserRepository) {}
@@ -11,18 +26,79 @@ export class AuthService implements IAuthService {
     return this.userRepository;
   }
 
-  public async register(
-    _userData: Partial<IUser>,
-  ): Promise<{ user: Partial<IUser>; token: string }> {
-    // Architecture stub - Business logic to be implemented via TDD
-    throw new AppError('Authentication logic not implemented yet', HttpStatus.BAD_REQUEST);
+  public async register(userData: Partial<IUser>): Promise<AuthResultPayload> {
+    const { name, email, password, role } = userData;
+
+    if (!name || !email || !password) {
+      throw new AppError('Name, email, and password are required', HttpStatus.BAD_REQUEST);
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const existingUser = await this.userRepository.findByEmail(normalizedEmail);
+    if (existingUser) {
+      throw new AppError('Email is already registered', HttpStatus.CONFLICT);
+    }
+
+    const hashedPassword = await PasswordUtil.hashPassword(password);
+
+    const createdUser = await this.userRepository.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      password: hashedPassword,
+      role: role || (('USER' as unknown) as any),
+    });
+
+    const userId = createdUser._id ? createdUser._id.toString() : '';
+
+    const accessToken = JwtUtil.generateAccessToken(
+      userId,
+      createdUser.email,
+      createdUser.role,
+    );
+
+    return {
+      user: this.sanitizeUser(createdUser),
+      accessToken,
+      expiresIn: env.JWT_EXPIRES_IN,
+    };
   }
 
-  public async login(
-    _email: string,
-    _password: string,
-  ): Promise<{ user: Partial<IUser>; token: string }> {
-    // Architecture stub - Business logic to be implemented via TDD
-    throw new AppError('Authentication logic not implemented yet', HttpStatus.BAD_REQUEST);
+  public async login(email: string, password: string): Promise<AuthResultPayload> {
+    if (!email || !password) {
+      throw new AppError('Email and password are required', HttpStatus.BAD_REQUEST);
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await this.userRepository.findByEmail(normalizedEmail);
+    if (!user || !user.password) {
+      throw new AppError('Invalid email or password', HttpStatus.UNAUTHORIZED);
+    }
+
+    const isPasswordValid = await PasswordUtil.comparePassword(password, user.password);
+    if (!isPasswordValid) {
+      throw new AppError('Invalid email or password', HttpStatus.UNAUTHORIZED);
+    }
+
+    const userId = user._id ? user._id.toString() : '';
+
+    const accessToken = JwtUtil.generateAccessToken(userId, user.email, user.role);
+
+    return {
+      user: this.sanitizeUser(user),
+      accessToken,
+      expiresIn: env.JWT_EXPIRES_IN,
+    };
+  }
+
+  private sanitizeUser(user: IUser) {
+    return {
+      id: user._id ? user._id.toString() : '',
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      ...(user.createdAt && { createdAt: user.createdAt }),
+    };
   }
 }
