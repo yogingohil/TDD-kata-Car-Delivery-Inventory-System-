@@ -24,7 +24,17 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
+// Root Welcome Endpoint
+app.get('/', (_req: Request, res: Response) => {
+  res.status(HttpStatus.OK).json({
+    message: 'Welcome to APEX MOTORS Car Delivery & Inventory Management API',
+    swaggerDocs: '/api-docs',
+    healthCheck: '/api/v1/health',
+    status: 'online',
+  });
+});
+
+// Health check endpoints
 const healthHandler = (_req: Request, res: Response) => {
   res.status(HttpStatus.OK).json({
     status: 'healthy',
