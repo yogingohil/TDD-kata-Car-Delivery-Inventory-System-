@@ -15,15 +15,16 @@ An enterprise-grade, production-ready Luxury Car Delivery & Inventory Management
 | Role | Email | Password | Access Capabilities |
 | :--- | :--- | :--- | :--- |
 | **Customer User** | `yogin@example.com` | `Password123!` | Catalog, Delivery Tracking, PDF Invoices, EMI Calculator, Comparison, Test Drive Booking |
-| **Administrator** | `admin@example.com` | `AdminPassword123!` | Fleet Management, Add/Edit Vehicle Specs, Restock, Test Drive Schedule Manager, Analytics |
+| **Administrator** | `.................` | `.............` | Fleet Management, Add/Edit Vehicle Specs, Restock, Test Drive Schedule Manager, Analytics |
 
 ---
 
-## 🤖 My AI Usage (Mandatory Assessment Section)
+## 🤖 My AI Usage in This Project
 
 ### AI Tools Utilized
 - **Google Antigravity & Gemini 2.5 Pro**: Primary AI Pair Programmer & Code Architect for end-to-end full-stack development, TDD test suite generation, Clean Architecture design, and production deployment automation.
 - **GitHub Copilot / ChatGPT**: Used for inline TypeScript type definitions, regex validation patterns, and documentation formatting.
+- **Claude AI**: Used for QA tester as find bugs and highlighting which area need to be improved to deliver responsive web app.
 
 ### How AI Was Leveraged Across the Lifecycle
 1. **Architectural Brainstorming & Schema Design**: Used AI to design decoupled SOLID layers (Controller-Service-Repository pattern) and MongoDB Mongoose schemas for vehicles, purchases, and test drives.
@@ -300,7 +301,3 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
----
-
-## 📄 License
-This repository is engineered as part of the technical assessment for **Incubyte**.
