@@ -8,7 +8,7 @@ RUN npm ci --include=dev
 
 COPY . .
 
-RUN npx tsc
+RUN ./node_modules/.bin/tsc
 
 EXPOSE 5000
 
