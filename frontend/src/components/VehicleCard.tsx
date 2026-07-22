@@ -1,6 +1,9 @@
 import React from 'react';
 import { IVehicle, VehicleStatus } from '../types/index.js';
 import { Link } from 'react-router-dom';
+import { useCurrency } from '../context/CurrencyContext.js';
+import { useCompareStore } from '../store/compareStore.js';
+import { useUIStore } from '../store/uiStore.js';
 
 interface VehicleCardProps {
   vehicle: IVehicle;
@@ -8,6 +11,23 @@ interface VehicleCardProps {
 }
 
 export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase }) => {
+  const { formatPrice } = useCurrency();
+  const { addToCompare, vehicles: compareList } = useCompareStore();
+  const { addToast } = useUIStore();
+
+  const isCompared = compareList.some((v) => v._id === vehicle._id);
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isCompared) return;
+    if (compareList.length >= 3) {
+      addToast('You can compare up to 3 vehicles at a time', 'info');
+      return;
+    }
+    addToCompare(vehicle);
+    addToast(`Added ${vehicle.make} ${vehicle.model} to comparison!`, 'success');
+  };
+
   const getStatusBadge = (status: VehicleStatus, quantity: number) => {
     if (status === VehicleStatus.OUT_OF_STOCK || quantity === 0) {
       return (
@@ -42,9 +62,21 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
             alt={`${vehicle.make} ${vehicle.model}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-3 right-3 flex items-center gap-2">
             {getStatusBadge(vehicle.status, vehicle.quantity)}
           </div>
+
+          <button
+            onClick={handleCompare}
+            className={`absolute top-3 left-3 px-2.5 py-1 text-[11px] font-bold rounded-lg backdrop-blur-md transition-all ${
+              isCompared
+                ? 'bg-cyan-500 text-slate-950 shadow-md'
+                : 'bg-slate-950/80 text-slate-300 hover:text-white border border-slate-700'
+            }`}
+          >
+            {isCompared ? '✓ Comparing' : '+ Compare'}
+          </button>
+
           <div className="absolute bottom-3 left-3 px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-950/80 text-slate-300 border border-slate-700/60 backdrop-blur-md">
             {vehicle.category}
           </div>
@@ -55,9 +87,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
             <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors truncate">
               {vehicle.make} {vehicle.model}
             </h3>
-            <span className="text-xs font-semibold text-slate-400">
-              {vehicle.year}
-            </span>
+            <span className="text-xs font-semibold text-slate-400">{vehicle.year}</span>
           </div>
 
           <p className="text-xs text-slate-400 line-clamp-2 mb-4">
@@ -85,7 +115,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
         <div>
           <span className="text-xs text-slate-400 block">Price</span>
           <span className="text-xl font-extrabold text-white">
-            ${vehicle.price.toLocaleString()}
+            {formatPrice(vehicle.price)}
           </span>
         </div>
 

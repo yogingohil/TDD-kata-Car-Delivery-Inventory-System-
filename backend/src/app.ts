@@ -24,13 +24,25 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoint
+const healthHandler = (_req: Request, res: Response) => {
+  res.status(HttpStatus.OK).json({
+    status: 'healthy',
+    service: 'Car Inventory System API',
+    timestamp: new Date().toISOString(),
+  });
+};
+
+app.get('/health', healthHandler);
+app.get('/api/v1/health', healthHandler);
+
 // Swagger OpenAPI Documentation UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // API Base Routes
 app.use('/api/v1', apiRouter);
 
-// Support fallback route /api/auth if client requests without /v1
+// Support fallback route /api if client requests without /v1
 app.use('/api', apiRouter);
 
 // 404 Route Handler

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { purchaseService, vehicleService } from '../services/api.js';
+import { purchaseService, vehicleService, apiClient } from '../services/api.js';
 import { IVehicle } from '../types/index.js';
 import { useUIStore } from '../store/uiStore.js';
+import { useCurrency } from '../context/CurrencyContext.js';
 
 export const AdminDashboard: React.FC = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<IVehicle | null>(null);
@@ -10,7 +11,9 @@ export const AdminDashboard: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<IVehicle | null>(null);
 
-  // Form states for Add/Edit
+  const { formatPrice } = useCurrency();
+  const { addToast } = useUIStore();
+
   const [formData, setFormData] = useState<Partial<IVehicle>>({
     make: '',
     model: '',
@@ -27,8 +30,6 @@ export const AdminDashboard: React.FC = () => {
     description: '',
   });
 
-  const { addToast } = useUIStore();
-
   const { data: analytics, refetch: refetchAnalytics } = useQuery({
     queryKey: ['adminAnalytics'],
     queryFn: () => purchaseService.getAnalyticsSummary(),
@@ -37,6 +38,14 @@ export const AdminDashboard: React.FC = () => {
   const { data: vehiclesData, refetch: refetchVehicles } = useQuery({
     queryKey: ['adminVehicles'],
     queryFn: () => vehicleService.getVehicles({ limit: 100 }),
+  });
+
+  const { data: testDrives, refetch: refetchTestDrives } = useQuery({
+    queryKey: ['adminTestDrives'],
+    queryFn: async () => {
+      const res = await apiClient.get('/test-drives');
+      return res.data.data;
+    },
   });
 
   const handleRestock = async () => {
@@ -61,6 +70,16 @@ export const AdminDashboard: React.FC = () => {
       refetchAnalytics();
     } catch (err: any) {
       addToast(err.response?.data?.message || 'Delete failed', 'error');
+    }
+  };
+
+  const handleUpdateTestDriveStatus = async (id: string, status: string) => {
+    try {
+      await apiClient.patch(`/test-drives/${id}/status`, { status });
+      addToast(`Test drive status updated to ${status}!`, 'success');
+      refetchTestDrives();
+    } catch (err: any) {
+      addToast(err.response?.data?.message || 'Failed to update test drive', 'error');
     }
   };
 
@@ -99,7 +118,7 @@ export const AdminDashboard: React.FC = () => {
             Executive Control Panel
           </span>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Inventory Analytics & Operations
+            Inventory Operations & Real-Time Analytics
           </h1>
         </div>
 
@@ -129,10 +148,10 @@ export const AdminDashboard: React.FC = () => {
         </button>
       </div>
 
-      {/* PHASE 5 Analytics Metric Cards */}
+      {/* Analytics KPI Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
-          <span className="text-xs font-semibold text-slate-400 block">Total Vehicles</span>
+          <span className="text-xs font-semibold text-slate-400 block">Total Fleet</span>
           <span className="text-3xl font-black text-white mt-2 block">
             {summary?.totalVehicles || 0}
           </span>
@@ -146,7 +165,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
-          <span className="text-xs font-semibold text-slate-400 block">Low Stock</span>
+          <span className="text-xs font-semibold text-slate-400 block">Low Stock Alert</span>
           <span className="text-3xl font-black text-amber-400 mt-2 block">
             {summary?.lowStockVehicles || 0}
           </span>
@@ -160,27 +179,98 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
-          <span className="text-xs font-semibold text-slate-400 block">Total Inventory Value</span>
+          <span className="text-xs font-semibold text-slate-400 block">Inventory Valuation</span>
           <span className="text-2xl font-black text-cyan-400 mt-2 block">
-            ${(summary?.totalInventoryValue || 0).toLocaleString()}
+            {formatPrice(summary?.totalInventoryValue || 0)}
           </span>
         </div>
       </div>
 
-      {/* Category Breakdown */}
+      {/* Category Stock Distribution Bar Visualizer */}
       {summary?.categoryDistribution && (
         <div className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl space-y-4">
-          <h3 className="text-lg font-bold text-white">Category Stock Distribution</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <h3 className="text-lg font-bold text-white">Fleet Category Distribution</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {Object.entries(summary.categoryDistribution).map(([cat, qty]) => (
-              <div key={cat} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                <span className="text-xs text-slate-400 block">{cat}</span>
-                <span className="text-xl font-bold text-white">{qty} units</span>
+              <div key={cat} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 space-y-2">
+                <span className="text-xs text-slate-400 block font-semibold">{cat}</span>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xl font-bold text-white">{qty} units</span>
+                  <span className="text-[10px] text-cyan-400 font-bold">
+                    {Math.round((qty / (summary.totalVehicles || 1)) * 100)}%
+                  </span>
+                </div>
+                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-cyan-500 rounded-full"
+                    style={{ width: `${Math.min(100, (qty / 10) * 100)}%` }}
+                  />
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
+
+      {/* Test Drives Schedule Manager */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold text-white">Customer Test Drive Appointments</h3>
+        {!testDrives || testDrives.length === 0 ? (
+          <div className="p-6 text-center bg-slate-900/40 rounded-2xl border border-slate-800 text-xs text-slate-400">
+            No customer test drives requested yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-xl">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="bg-slate-950/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th className="px-6 py-4">Customer</th>
+                  <th className="px-6 py-4">Vehicle</th>
+                  <th className="px-6 py-4">Date & Time</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Phone</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 text-right">Update Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {testDrives.map((td: any) => (
+                  <tr key={td._id} className="hover:bg-slate-800/30 transition-colors">
+                    <td className="px-6 py-4 font-bold text-white">{td.userId?.name || 'Customer'}</td>
+                    <td className="px-6 py-4 text-slate-300">
+                      {td.vehicleId ? `${td.vehicleId.make} ${td.vehicleId.model}` : 'Vehicle'}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-slate-400">
+                      {td.preferredDate} ({td.preferredTimeSlot})
+                    </td>
+                    <td className="px-6 py-4 text-xs font-semibold text-cyan-400">{td.type}</td>
+                    <td className="px-6 py-4 text-xs font-mono text-slate-400">{td.contactPhone}</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                        {td.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-1">
+                      <button
+                        onClick={() => handleUpdateTestDriveStatus(td._id, 'CONFIRMED')}
+                        className="px-2 py-1 text-[11px] font-bold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        onClick={() => handleUpdateTestDriveStatus(td._id, 'COMPLETED')}
+                        className="px-2 py-1 text-[11px] font-bold rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+                      >
+                        Complete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Vehicle Management Table */}
       <div className="space-y-4">
@@ -207,7 +297,7 @@ export const AdminDashboard: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 text-slate-400">{v.category}</td>
                   <td className="px-6 py-4 font-mono text-xs text-slate-400">{v.vin}</td>
-                  <td className="px-6 py-4 font-bold text-white">${v.price.toLocaleString()}</td>
+                  <td className="px-6 py-4 font-bold text-white">{formatPrice(v.price)}</td>
                   <td className="px-6 py-4 font-bold text-cyan-400">{v.quantity}</td>
                   <td className="px-6 py-4">
                     <span
@@ -253,9 +343,7 @@ export const AdminDashboard: React.FC = () => {
       {selectedVehicle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
           <div className="max-w-md w-full p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl space-y-4">
-            <h3 className="text-xl font-bold text-white">
-              Restock Vehicle Inventory
-            </h3>
+            <h3 className="text-xl font-bold text-white">Restock Vehicle Inventory</h3>
             <p className="text-xs text-slate-400">
               {selectedVehicle.make} {selectedVehicle.model} (Current Stock: {selectedVehicle.quantity})
             </p>

@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { vehicleService } from '../services/api.js';
+import { EmiCalculator } from '../components/EmiCalculator.js';
+import { TestDriveModal } from '../components/TestDriveModal.js';
+import { useCurrency } from '../context/CurrencyContext.js';
 
 export const VehicleDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
+  const { formatPrice } = useCurrency();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['vehicle', id],
@@ -34,13 +39,13 @@ export const VehicleDetails: React.FC = () => {
   const v = data.data;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       <Link to="/inventory" className="text-sm font-semibold text-slate-400 hover:text-cyan-400 transition-colors">
         ← Back to Inventory Catalog
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div className="rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl h-[400px]">
+        <div className="rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl h-[420px]">
           <img
             src={
               v.image ||
@@ -64,8 +69,16 @@ export const VehicleDetails: React.FC = () => {
             </p>
           </div>
 
-          <div className="text-3xl font-black text-cyan-400">
-            ${v.price.toLocaleString()}
+          <div className="flex items-center justify-between">
+            <div className="text-3xl font-black text-cyan-400">
+              {formatPrice(v.price)}
+            </div>
+            <button
+              onClick={() => setIsTestDriveOpen(true)}
+              className="px-5 py-3 text-xs font-bold rounded-xl text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 shadow-md"
+            >
+              📅 Schedule Test Drive
+            </button>
           </div>
 
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 grid grid-cols-2 gap-4 text-sm">
@@ -105,6 +118,16 @@ export const VehicleDetails: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Auto Financing EMI Calculator Section */}
+      <EmiCalculator vehiclePrice={v.price} />
+
+      {/* Test Drive Booking Modal */}
+      <TestDriveModal
+        vehicle={v}
+        isOpen={isTestDriveOpen}
+        onClose={() => setIsTestDriveOpen(false)}
+      />
     </div>
   );
 };
