@@ -2,16 +2,16 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+COPY package*.json ./
 COPY backend/package*.json ./backend/
 
-RUN cd backend && npm ci
+RUN npm ci --include=dev
+RUN cd backend && npm ci --include=dev
 
-COPY backend ./backend
+COPY . .
 
-WORKDIR /app/backend
-
-RUN npm run build
+RUN npm run build:backend
 
 EXPOSE 5000
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "backend/dist/server.js"]

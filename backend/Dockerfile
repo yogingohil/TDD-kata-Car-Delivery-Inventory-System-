@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --omit=dev=false
+RUN npm ci --include=dev
 
 COPY . .
 
