@@ -15,9 +15,18 @@ export interface IUserRepository extends IBaseRepository<IUser> {
 }
 
 export interface IVehicleRepository extends IBaseRepository<IVehicle> {
+  findByVin(vin: string): Promise<IVehicle | null>;
+  findWithFilters(options: Record<string, unknown>): Promise<{
+    vehicles: IVehicle[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>;
   updateQuantity(id: string, quantityChange: number): Promise<IVehicle | null>;
 }
 
 export interface IPurchaseRepository extends IBaseRepository<IPurchase> {
   findByUserId(userId: string): Promise<IPurchase[]>;
+  findAllWithPopulate(): Promise<IPurchase[]>;
 }

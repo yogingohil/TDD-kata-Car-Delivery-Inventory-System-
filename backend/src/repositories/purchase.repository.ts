@@ -15,6 +15,17 @@ export class PurchaseRepository
     return this.model
       .find({ userId })
       .populate('vehicleId')
+      .populate('userId', 'name email')
+      .sort({ purchasedAt: -1 })
+      .lean<IPurchase[]>()
+      .exec();
+  }
+
+  public async findAllWithPopulate(): Promise<IPurchase[]> {
+    return this.model
+      .find()
+      .populate('vehicleId')
+      .populate('userId', 'name email')
       .sort({ purchasedAt: -1 })
       .lean<IPurchase[]>()
       .exec();
