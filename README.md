@@ -6,7 +6,8 @@ An enterprise-grade, production-ready Luxury Car Delivery & Inventory Management
 
 ## 🌟 Live Production Links & Evaluator Credentials
 
-- ⚡ **Live Production Backend (Render)**: [https://tdd-kata-car-delivery-inventory-system-1.onrender.com](https://tdd-kata-car-delivery-inventory-system-1.onrender.com)
+- 🎨 **Live Web Application (Vercel Frontend)**: [https://tdd-kata-car-delivery-inventory-sys.vercel.app/](https://tdd-kata-car-delivery-inventory-sys.vercel.app/)
+- ⚡ **Live Production API (Render Backend)**: [https://tdd-kata-car-delivery-inventory-system-1.onrender.com](https://tdd-kata-car-delivery-inventory-system-1.onrender.com)
 - 📜 **Interactive Swagger API Documentation**: [https://tdd-kata-car-delivery-inventory-system-1.onrender.com/api-docs](https://tdd-kata-car-delivery-inventory-system-1.onrender.com/api-docs)
 - 📁 **GitHub Repository**: [https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-](https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-)
 
@@ -15,6 +16,30 @@ An enterprise-grade, production-ready Luxury Car Delivery & Inventory Management
 | :--- | :--- | :--- | :--- |
 | **Customer User** | `yogin@example.com` | `Password123!` | Catalog, Delivery Tracking, PDF Invoices, EMI Calculator, Comparison, Test Drive Booking |
 | **Administrator** | `admin@example.com` | `AdminPassword123!` | Fleet Management, Add/Edit Vehicle Specs, Restock, Test Drive Schedule Manager, Analytics |
+
+---
+
+## 🛠️ Technology Stack
+
+### Frontend Architecture
+- **Framework**: **React 19** with **Vite 6** & **TypeScript**
+- **Styling**: **TailwindCSS v4** with Glassmorphism Dark Theme & Modern Typography
+- **Routing**: **React Router v7** with Role-Based Access Control (RBAC) Protected Routes
+- **Data Fetching & Caching**: **TanStack Query (React Query v5)** & **Axios** with JWT Interceptors
+- **State Management**: **Zustand** (Global Auth, Compare Drawer, and Toast Notifications)
+- **UI & Micro-Animations**: **Framer Motion** & Lucide Icons
+
+### Backend Architecture
+- **Runtime & Language**: **Node.js 20** & **ESM TypeScript**
+- **Web Framework**: **Express** with Clean Controller-Service-Repository Layers
+- **Database & ORM**: **MongoDB Atlas** & **Mongoose 8**
+- **Security**: **JWT (JSON Web Tokens)**, **Bcrypt** Password Hashing, **Helmet** Security Headers, **Express-Rate-Limit**, **CORS**
+- **Validation**: **Zod** Schema Validation for strict runtime request contracts
+- **Logging & API Docs**: **Winston** Structured Logger & **Swagger / OpenAPI 3.0** (`/api-docs`)
+
+### Quality Assurance & Testing
+- **Test Runner & Framework**: **Jest** & **Supertest**
+- **Test Coverage**: **40/40 Passing Unit & Integration Tests** across 11 Test Suites (>90% Coverage)
 
 ---
 
@@ -259,3 +284,6 @@ npm run dev:frontend
 ```
 
 ---
+
+## 📄 License
+This repository is engineered as part of the technical assessment for **Incubyte**.
