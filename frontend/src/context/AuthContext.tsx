@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, FC } from 'react';
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../store/authStore.js';
 import { User } from '../types/user';
 
 interface AuthContextType {

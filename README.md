@@ -1,85 +1,86 @@
-# 🏎️ Premium Car Dealership Inventory Management System
+# 🏎️ APEX MOTORS — Enterprise Luxury Car Dealership & Delivery Inventory System
 
-An enterprise-grade, production-ready Car Delivery & Inventory Management System engineered for the **Incubyte Technical Assessment**. Built with **TypeScript**, **Clean Architecture**, **SOLID Principles**, **Dependency Injection**, **Repository Pattern**, and strict **Test Driven Development (TDD: Red → Green → Refactor)**.
+An enterprise-grade, production-ready Luxury Car Delivery & Inventory Management Platform engineered for the **Incubyte Technical Assessment**. Built with **TypeScript**, **Clean Architecture**, **SOLID Principles**, **Dependency Injection**, **Repository Pattern**, and strict **Test Driven Development (TDD: Red → Green → Refactor)**.
 
 ---
 
-## 🔗 Submission Links for Incubyte Evaluators
+## 🌟 Live Production Links & Evaluator Credentials
 
 - 📁 **GitHub Repository**: [https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-](https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-)
-- 📜 **Swagger API Documentation**: `http://localhost:5000/api-docs`
-- 🔐 **Demo Evaluator Credentials**:
-  - **Customer Account**: `yogin@example.com` / `Password123!`
-  - **Administrator Account**: `admin@example.com` / `AdminPassword123!`
+- ⚡ **Live Production Backend (Render)**: [https://tdd-kata-car-delivery-inventory-system-1.onrender.com](https://tdd-kata-car-delivery-inventory-system-1.onrender.com)
+- 📜 **Interactive Swagger API Documentation**: [https://tdd-kata-car-delivery-inventory-system-1.onrender.com/api-docs](https://tdd-kata-car-delivery-inventory-system-1.onrender.com/api-docs)
+
+### 🔐 Evaluator Demo Accounts for Testing
+| Role | Email | Password | Access Rights |
+| :--- | :--- | :--- | :--- |
+| **Customer User** | `yogin@example.com` | `Password123!` | Catalog, Delivery Tracking, PDF Invoices, EMI Calculator, Comparison, Test Drive Booking |
+| **Administrator** | `admin@example.com` | `AdminPassword123!` | Fleet Management, Add/Edit Vehicle Specs, Restock, Test Drive Schedule Manager, Inventory Analytics |
 
 ---
 
-## 🌟 Tech Stack
+## ✨ Features & Architecture Highlights
 
-### Frontend
-- **React 19** with **Vite** & **TypeScript**
-- **TailwindCSS v4** with custom Glassmorphism SaaS Dark UI
-- **React Router v7** with RBAC Protected Routes
-- **TanStack Query (React Query v5)**
-- **Axios** with Request Interceptors & JWT token handling
-- **Zustand** for global Auth & Toast notification state management
-- **Framer Motion** for smooth micro-animations
+### 🚚 1. Real-Time Vehicle Order Delivery Tracker
+- Interactive 5-stage live progress timeline modal (`Order Confirmed` $\rightarrow$ `PDI Inspection` $\rightarrow$ `Transit` $\rightarrow$ `Out for Delivery` $\rightarrow$ `Delivered`).
 
-### Backend
-- **Node.js** & **Express** with ESM TypeScript
-- **MongoDB Atlas** & **Mongoose 8**
-- **JWT (JSON Web Tokens)** & **Bcrypt** password hashing
-- **Zod** schema validation
-- **Helmet**, **Cors**, & **Express-Rate-Limit** security headers
-- **Winston** structured logging & **OpenAPI / Swagger** documentation (`/api-docs`)
+### 📄 2. One-Click PDF Purchase Invoice Generator
+- Instant generation of official branded PDF receipts featuring VIN, transaction ID, tax breakdown, and print triggers.
 
-### Testing & Quality Assurance
-- **Jest** & **Supertest**
-- **40/40 Passing Unit & Integration Tests** across 11 Test Suites
-- **>90% Core Code Coverage**
+### ⚖️ 3. Side-by-Side Luxury Vehicle Comparison Tool
+- Compare up to 3 luxury vehicles specs (Price, Engine, Transmission, Fuel, Mileage, Stock) side-by-side in a dynamic slide-over modal.
+
+### 🧮 4. Interactive Auto Financing & EMI Loan Calculator
+- Real-time loan interest and monthly installment calculator with interactive sliders for Down Payment, Loan Tenure, and APR interest rate.
+
+### 📅 5. Test Drive Experience Booking System
+- Schedule Showroom Visits or VIP Home Delivery Test Drives with custom preferred date and time slots. Includes an Admin schedule management panel.
+
+### 💱 6. Live Multi-Currency Switcher (USD, EUR, GBP, INR)
+- Dynamic price conversions across the entire catalog, details page, EMI calculator, and user dashboards.
 
 ---
 
-## 🏛️ Architecture & SOLID Principles
+## 🏛️ Clean Architecture & SOLID Principles
 
 ```
 project-root
 │
 ├── backend
 │   └── src
-│       ├── config          # Database, Swagger, & Environment Config
-│       ├── constants       # HttpStatus codes & Role Enums
+│       ├── config          # Database, Swagger, & Environment Configuration
+│       ├── constants       # HttpStatus codes & UserRole Enums
 │       ├── controllers     # HTTP Controllers (Dependency Injected)
 │       ├── interfaces      # Core Domain Contracts & Service Interfaces
 │       ├── middlewares      # Auth JWT, RBAC, Rate Limiter, Validation, Request ID
 │       ├── models          # Mongoose Schemas & MongoDB Models
 │       ├── repositories    # Generic Base Repository & Entity Repositories
-│       ├── routes          # Express Central Router Pipeline
+│       ├── routes          # Express Central Router Pipeline with Fail-Safe Fallbacks
 │       ├── services        # Domain Business Logic Layer
-│       ├── tests           # Integration & Unit Test Suites
-│       ├── utils           # ApiResponse, JwtUtil, PasswordUtil, AppError
-│       └── validators      # Zod Validation Schemas
+│       ├── tests           # 100% Passing Unit & Integration Test Suites
+│       ├── utils           # ApiResponse, JwtUtil, PasswordUtil, AppError, Logger, Seed
+│       └── validators      # Zod Schema Validation Rules
 │
 └── frontend
     └── src
-        ├── components      # Navbar, Footer, VehicleCard, ToastContainer, SkeletonGrid
-        ├── pages           # Home, Login, Register, Inventory, Details, Dashboard, Admin, 404
-        ├── routes          # React Router v7 with Protected & Admin Routes
+        ├── components      # Navbar, Footer, VehicleCard, CompareModal, EmiCalculator, TestDriveModal, OrderTrackingModal
+        ├── context         # AuthContext & CurrencyContext Providers
+        ├── pages           # Home, Login, Register, Inventory, VehicleDetails, Dashboard, AdminDashboard, NotFound
+        ├── routes          # React Router v7 with RBAC Protected & Admin Routes
         ├── services        # Axios API Client & Services
-        ├── store           # Zustand Auth & UI Toast Stores
+        ├── store           # Zustand Auth, Compare & UI Toast Stores
         └── types           # Shared TypeScript Interfaces
 ```
 
-### Key Architectural Highlights:
-1. **Single Responsibility Principle (SRP)**: Controllers handle HTTP translation, Services execute business rules, and Repositories handle database interactions.
-2. **Open/Closed Principle (OCP)**: Extensible BaseRepository interface for data access.
-3. **Liskov Substitution Principle (LSP)**: Derived repositories satisfy base repository interfaces cleanly.
-4. **Interface Segregation Principle (ISP)**: Specific contracts (`IUserRepository`, `IVehicleRepository`, `IPurchaseRepository`).
-5. **Dependency Inversion Principle (DIP)**: Controllers and services depend on abstractions (`IAuthService`, `IVehicleRepository`).
+### SOLID Principles Implementation:
+1. **Single Responsibility Principle (SRP)**: Controllers handle HTTP translation, Services execute business logic, and Repositories handle database persistence.
+2. **Open/Closed Principle (OCP)**: BaseRepository interface allows extending storage mechanisms without altering domain services.
+3. **Liskov Substitution Principle (LSP)**: All derived entity repositories satisfy base interfaces cleanly.
+4. **Interface Segregation Principle (ISP)**: Decoupled contracts (`IUserRepository`, `IVehicleRepository`, `IPurchaseRepository`, `ITestDriveRepository`).
+5. **Dependency Inversion Principle (DIP)**: High-level services depend on abstract interfaces rather than concrete Mongoose models.
 
 ---
 
-## 📡 API Endpoints Documentation
+## 📡 API Endpoints Summary
 
 ### Authentication (`/api/v1/auth`)
 | Method | Endpoint | Description | Auth Required |
@@ -87,30 +88,35 @@ project-root
 | `POST` | `/api/v1/auth/register` | Register new user account | Public |
 | `POST` | `/api/v1/auth/login` | Authenticate user & return JWT token | Public |
 
-### Vehicle Management (`/api/v1/vehicles`)
+### Vehicle Inventory (`/api/v1/vehicles`)
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/v1/vehicles` | Paginated search & multi-filter catalog | Public |
 | `GET` | `/api/v1/vehicles/:id` | Retrieve vehicle details | Public |
 | `POST` | `/api/v1/vehicles` | Add new vehicle (Unique VIN enforced) | Admin Only |
-| `PUT` | `/api/v1/vehicles/:id` | Update vehicle details | Admin Only |
+| `PUT` | `/api/v1/vehicles/:id` | Update vehicle details & specs | Admin Only |
 | `DELETE` | `/api/v1/vehicles/:id` | Delete vehicle | Admin Only |
 | `POST` | `/api/v1/vehicles/:id/restock` | Restock inventory quantity | Admin Only |
-| `POST` | `/api/v1/vehicles/:id/purchase` | Purchase vehicle & decrease stock | User / Admin |
+| `POST` | `/api/v1/vehicles/:id/purchase` | Purchase vehicle & atomic stock reduction | User / Admin |
+
+### Test Drives (`/api/v1/test-drives`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/test-drives` | Schedule test drive appointment | User / Admin |
+| `GET` | `/api/v1/test-drives/my` | View user test drive appointments | User / Admin |
+| `GET` | `/api/v1/test-drives` | View all customer test drive requests | Admin Only |
+| `PATCH` | `/api/v1/test-drives/:id/status` | Update appointment status | Admin Only |
 
 ### Purchases & Analytics (`/api/v1/purchases`)
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/v1/purchases/my` | View user purchase history | User / Admin |
 | `GET` | `/api/v1/purchases` | View all customer orders | Admin Only |
-| `GET` | `/api/v1/purchases/analytics/summary` | Analytics & inventory metrics | Admin Only |
-
-### API Documentation UI
-Open **`http://localhost:5000/api-docs`** in your browser to view the interactive **Swagger / OpenAPI** documentation.
+| `GET` | `/api/v1/purchases/analytics/summary` | Fleet & financial analytics summary | Admin Only |
 
 ---
 
-## 🧪 TDD Test Verification
+## 🧪 TDD Test Verification Suite
 
 Run all unit & integration test suites:
 ```bash
@@ -120,44 +126,32 @@ npm run test:backend
 **Results**:
 - **Test Suites**: `11 passed, 11 total`
 - **Tests**: `40 passed, 40 total`
-
-Run test coverage report:
-```bash
-npm run test:coverage --prefix backend
-```
+- **Coverage**: `>90% Core Domain Code Coverage`
 
 ---
 
 ## 🚀 Running Locally
 
-### 1. Prerequisites
-- Node.js $\ge 18.0.0$
-- npm $\ge 9.0.0$
-
-### 2. Installation & Setup
+### 1. Installation
 ```bash
 # Clone the repository
 git clone https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-.git
 cd TDD-kata-Car-Delivery-Inventory-System-
 
-# Install monorepo dependencies
+# Install all monorepo dependencies
 npm run install:all
 ```
 
-### 3. Start Backend Development Server
+### 2. Start Servers
 ```bash
+# Terminal 1: Backend Server (http://localhost:5000)
 npm run dev:backend
-# Server runs on http://localhost:5000
-# Swagger docs at http://localhost:5000/api-docs
-```
 
-### 4. Start Frontend Development Server
-```bash
+# Terminal 2: Frontend App (http://localhost:5173)
 npm run dev:frontend
-# Vite dev server runs on http://localhost:5173
 ```
 
 ---
 
 ## 📄 License
-This repository is created as part of an incubator technical assessment.
+This repository is engineered as part of the technical assessment for **Incubyte**.
