@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { TestDriveService } from '../services/testDrive.service.js';
 import { ApiResponse } from '../utils/response.util.js';
 import { HttpStatus } from '../constants/http-status.js';
+import { AppError } from '../utils/app-error.js';
 
 export class TestDriveController {
   private testDriveService: TestDriveService;
@@ -11,13 +12,21 @@ export class TestDriveController {
   }
 
   public schedule = async (req: Request, res: Response): Promise<void> => {
-    const userId = (req as any).user!.userId;
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
     const testDrive = await this.testDriveService.scheduleTestDrive(userId, req.body);
     ApiResponse.success(res, HttpStatus.CREATED, 'Test drive appointment scheduled successfully', testDrive);
   };
 
   public getUserAppointments = async (req: Request, res: Response): Promise<void> => {
-    const userId = (req as any).user!.userId;
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
     const appointments = await this.testDriveService.getUserTestDrives(userId);
     ApiResponse.success(res, HttpStatus.OK, 'User test drive appointments retrieved', appointments);
   };
