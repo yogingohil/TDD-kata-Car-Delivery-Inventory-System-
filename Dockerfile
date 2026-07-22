@@ -1,17 +1,17 @@
 FROM node:20-alpine
 
-WORKDIR /app
+WORKDIR /app/backend
 
-COPY package*.json ./
-COPY backend/package*.json ./backend/
+COPY backend/package*.json ./
 
 RUN npm ci --include=dev
-RUN cd backend && npm ci --include=dev
 
-COPY . .
+COPY backend ./
 
-RUN npm run build:backend
+RUN npx tsc
 
 EXPOSE 5000
 
-CMD ["node", "backend/dist/server.js"]
+ENV NODE_ENV=production
+
+CMD ["node", "dist/server.js"]

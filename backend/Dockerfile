@@ -8,8 +8,10 @@ RUN npm ci --include=dev
 
 COPY . .
 
-RUN npm run build
+RUN npx tsc
 
 EXPOSE 5000
+
+ENV NODE_ENV=production
 
 CMD ["node", "dist/server.js"]
