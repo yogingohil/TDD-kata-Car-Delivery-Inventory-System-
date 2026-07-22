@@ -103,14 +103,20 @@ export class VehicleRepository
   }
 
   public async updateQuantity(id: string, quantityChange: number): Promise<IVehicle | null> {
-    const vehicle = await this.model.findById(id).exec();
-    if (!vehicle) return null;
-
-    const newQuantity = vehicle.quantity + quantityChange;
-    if (newQuantity < 0) {
-      throw new Error('Quantity cannot be negative');
+    const query: Record<string, unknown> = { _id: id };
+    if (quantityChange < 0) {
+      query.quantity = { $gte: Math.abs(quantityChange) };
     }
 
+    const vehicle = await this.model.findOne(query).exec();
+    if (!vehicle) {
+      if (quantityChange < 0) {
+        throw new Error('Insufficient stock or vehicle not found');
+      }
+      return null;
+    }
+
+    const newQuantity = vehicle.quantity + quantityChange;
     let status = VehicleStatus.AVAILABLE;
     if (newQuantity === 0) {
       status = VehicleStatus.OUT_OF_STOCK;
