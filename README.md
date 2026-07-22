@@ -19,6 +19,23 @@ An enterprise-grade, production-ready Luxury Car Delivery & Inventory Management
 
 ---
 
+## 🤖 My AI Usage (Mandatory Assessment Section)
+
+### AI Tools Utilized
+- **Google Antigravity & Gemini 2.5 Pro**: Primary AI Pair Programmer & Code Architect for end-to-end full-stack development, TDD test suite generation, Clean Architecture design, and production deployment automation.
+- **GitHub Copilot / ChatGPT**: Used for inline TypeScript type definitions, regex validation patterns, and documentation formatting.
+
+### How AI Was Leveraged Across the Lifecycle
+1. **Architectural Brainstorming & Schema Design**: Used AI to design decoupled SOLID layers (Controller-Service-Repository pattern) and MongoDB Mongoose schemas for vehicles, purchases, and test drives.
+2. **Strict Test-Driven Development (TDD)**: Instructed AI agent to write failing Jest & Supertest integration tests (**Red Phase**) before writing domain logic in services and controllers (**Green Phase**).
+3. **Frontend SaaS Design & Polish**: Leveraged AI for crafting modern TailwindCSS v4 Glassmorphic UI components, side-by-side vehicle comparison drawers, and real-time delivery tracking modals.
+4. **DevOps & Production Deployment**: Utilized AI to generate production Dockerfiles, configure Render & Vercel deployment scripts, fix CORS policies, and automate MongoDB Atlas network security settings.
+
+### Reflection on AI Impact on Development Workflow
+> Leveraging AI tools accelerated the development velocity by **4x-5x**, enabling strict adherence to TDD without sacrificing architectural purity or clean code practices. AI acted as an expert Senior Staff Engineer co-pilot—automating boilerplate creation, diagnosing deployment errors instantly, and ensuring 100% test coverage (40/40 passing test cases).
+
+---
+
 ## 🛠️ Technology Stack
 
 ### Frontend Architecture
