@@ -5,6 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "seed": "tsx src/utils/seed.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest --detectOpenHandles --forceExit",
@@ -35,7 +36,7 @@
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^22.13.4",
     "@types/supertest": "^6.0.2",
-    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-jsdoc": "^6.3.0",
     "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
