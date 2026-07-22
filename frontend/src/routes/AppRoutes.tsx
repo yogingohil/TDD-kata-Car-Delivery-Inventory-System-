@@ -1,34 +1,65 @@
-import { FC } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { MainLayout } from '../layouts/MainLayout';
-import { AuthLayout } from '../layouts/AuthLayout';
-import { HomePage } from '../pages/HomePage';
-import { LoginPage } from '../pages/LoginPage';
-import { InventoryPage } from '../pages/InventoryPage';
-import { NotFoundPage } from '../pages/NotFoundPage';
-import { ProtectedRoute } from './ProtectedRoute';
-import { UserRole } from '../types/user';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Home } from '../pages/Home.js';
+import { Login } from '../pages/Login.js';
+import { Register } from '../pages/Register.js';
+import { Inventory } from '../pages/Inventory.js';
+import { VehicleDetails } from '../pages/VehicleDetails.js';
+import { Dashboard } from '../pages/Dashboard.js';
+import { PurchaseHistory } from '../pages/PurchaseHistory.js';
+import { AdminDashboard } from '../pages/AdminDashboard.js';
+import { NotFound } from '../pages/NotFound.js';
+import { useAuthStore } from '../store/authStore.js';
+import { UserRole } from '../types/index.js';
 
-export const AppRoutes: FC = () => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuthStore();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isAuthenticated } = useAuthStore();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== UserRole.ADMIN) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
+export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Public Main App Layout */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/inventory" element={<InventoryPage />} />
-        
-        {/* Protected Routes Example */}
-        <Route element={<ProtectedRoute requiredRole={UserRole.ADMIN} />}>
-          <Route path="/admin/inventory" element={<InventoryPage />} />
-        </Route>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/inventory" element={<Inventory />} />
+      <Route path="/vehicles/:id" element={<VehicleDetails />} />
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/purchases"
+        element={
+          <ProtectedRoute>
+            <PurchaseHistory />
+          </ProtectedRoute>
+        }
+      />
 
-      {/* Auth Layout */}
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={<LoginPage />} />
-      </Route>
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

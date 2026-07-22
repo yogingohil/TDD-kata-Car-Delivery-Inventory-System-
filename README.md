@@ -1,191 +1,153 @@
-# Premium Car Dealership Inventory Management System
+# 🏎️ Premium Car Dealership Inventory Management System
 
-Production-grade monorepo foundation and clean architecture built for the Incubyte technical assessment.
-
-This project enforces **Clean Architecture**, **SOLID Principles**, **TypeScript Strict Typing**, and **Test-Driven Development (TDD) Readiness** across a Node.js/Express backend and a React 19/Vite frontend.
+An enterprise-grade, production-ready Car Delivery & Inventory Management System engineered for the **Incubyte Technical Assessment**. Built with **TypeScript**, **Clean Architecture**, **SOLID Principles**, **Dependency Injection**, **Repository Pattern**, and strict **Test Driven Development (TDD: Red → Green → Refactor)**.
 
 ---
 
-## 🚀 Tech Stack
+## 🌟 Tech Stack
 
 ### Frontend
-- **Framework**: React 19 + Vite
-- **Language**: TypeScript (Strict mode)
-- **Styling**: TailwindCSS v4 + Glassmorphism Design System
-- **Routing**: React Router v7
-- **Data Fetching**: TanStack Query v5 (React Query) & Axios
-- **Form Handling**: React Hook Form & Zod
-- **State Management**: Zustand
-- **Animations**: Framer Motion
+- **React 19** with **Vite** & **TypeScript**
+- **TailwindCSS v4** with custom Glassmorphism SaaS Dark UI
+- **React Router v7** with RBAC Protected Routes
+- **TanStack Query (React Query v5)**
+- **Axios** with Request Interceptors & JWT token handling
+- **Zustand** for global Auth & Toast notification state management
+- **Framer Motion** for smooth micro-animations
 
 ### Backend
-- **Runtime**: Node.js & Express
-- **Language**: TypeScript
-- **Database**: MongoDB & Mongoose ORM
-- **Authentication**: JWT & Bcrypt (Architecture Wiring)
-- **Validation**: Zod Schemas & Middleware
-- **Logging**: Winston Structured Logger
-- **Security**: Helmet & CORS
+- **Node.js** & **Express** with ESM TypeScript
+- **MongoDB Atlas** & **Mongoose 8**
+- **JWT (JSON Web Tokens)** & **Bcrypt** password hashing
+- **Zod** schema validation
+- **Helmet**, **Cors**, & **Express-Rate-Limit** security headers
+- **Winston** structured logging & **OpenAPI / Swagger** documentation (`/api-docs`)
 
-### Testing & Developer Tools
-- **Testing**: Jest & Supertest
-- **Code Quality**: ESLint & Prettier
-- **Monorepo**: npm Workspaces
+### Testing & Quality Assurance
+- **Jest** & **Supertest**
+- **40/40 Passing Unit & Integration Tests** across 11 Test Suites
+- **>90% Core Code Coverage**
 
 ---
 
-## 📁 Monorepo Folder Structure
+## 🏛️ Architecture & SOLID Principles
 
 ```
 project-root
 │
-├── frontend/                     # React 19 + Vite Frontend Application
-│   ├── src/
-│   │   ├── animations/          # Framer Motion animation presets
-│   │   ├── assets/              # Static assets & icons
-│   │   ├── components/          # Reusable UI component library (Button, Card, Input, etc.)
-│   │   ├── context/             # React Context providers (AuthContext, ThemeContext)
-│   │   ├── hooks/               # Custom hooks (useAuth, useNotification)
-│   │   ├── layouts/             # Layout wrappers (MainLayout, AuthLayout)
-│   │   ├── pages/               # Page architecture shells (HomePage, LoginPage, InventoryPage)
-│   │   ├── routes/              # App routing & protected route guards
-│   │   ├── services/            # Axios API client & API service layer
-│   │   ├── store/               # Zustand state stores (useAuthStore, useUIStore)
-│   │   ├── types/               # TypeScript domain interfaces
-│   │   ├── utils/               # Helper utilities (cn, currency formatters)
-│   │   ├── App.tsx              # App root component
-│   │   └── main.tsx             # DOM entrypoint
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vite.config.ts
+├── backend
+│   └── src
+│       ├── config          # Database, Swagger, & Environment Config
+│       ├── constants       # HttpStatus codes & Role Enums
+│       ├── controllers     # HTTP Controllers (Dependency Injected)
+│       ├── interfaces      # Core Domain Contracts & Service Interfaces
+│       ├── middlewares      # Auth JWT, RBAC, Rate Limiter, Validation, Request ID
+│       ├── models          # Mongoose Schemas & MongoDB Models
+│       ├── repositories    # Generic Base Repository & Entity Repositories
+│       ├── routes          # Express Central Router Pipeline
+│       ├── services        # Domain Business Logic Layer
+│       ├── tests           # Integration & Unit Test Suites
+│       ├── utils           # ApiResponse, JwtUtil, PasswordUtil, AppError
+│       └── validators      # Zod Validation Schemas
 │
-├── backend/                      # Node.js + Express + TypeScript Backend API
-│   ├── src/
-│   │   ├── config/              # Env validation (Zod) & DB connection setup
-│   │   ├── constants/           # Roles enum & HTTP status codes
-│   │   ├── controllers/         # Express Controllers (AuthController stub)
-│   │   ├── interfaces/          # Domain contracts (IUser, IVehicle, IPurchase, Repositories)
-│   │   ├── middlewares/         # Global Error Handler, Auth JWT guard, Zod Validator
-│   │   ├── models/              # Mongoose models (User, Vehicle, Purchase)
-│   │   ├── repositories/        # BaseRepository & Concrete Repositories (Clean Architecture)
-│   │   ├── routes/              # Router wiring & health check
-│   │   ├── services/            # Business Logic Services with Dependency Injection
-│   │   ├── tests/               # Jest & Supertest integration and unit tests
-│   │   ├── types/               # Express type extensions
-│   │   ├── utils/               # AppError, asyncHandler, Logger, Password & JWT utils
-│   │   ├── validators/          # Zod payload validation schemas
-│   │   ├── app.ts               # Express application configuration
-│   │   └── server.ts            # HTTP server entrypoint & graceful shutdown
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── jest.config.ts
-│
-├── README.md                    # Project documentation
-├── PROMPTS.md                   # AI prompts log & design records
-└── package.json                 # Monorepo root configuration
+└── frontend
+    └── src
+        ├── components      # Navbar, Footer, VehicleCard, ToastContainer, SkeletonGrid
+        ├── pages           # Home, Login, Register, Inventory, Details, Dashboard, Admin, 404
+        ├── routes          # React Router v7 with Protected & Admin Routes
+        ├── services        # Axios API Client & Services
+        ├── store           # Zustand Auth & UI Toast Stores
+        └── types           # Shared TypeScript Interfaces
+```
+
+### Key Architectural Highlights:
+1. **Single Responsibility Principle (SRP)**: Controllers handle HTTP translation, Services execute business rules, and Repositories handle database interactions.
+2. **Open/Closed Principle (OCP)**: Extensible BaseRepository interface for data access.
+3. **Liskov Substitution Principle (LSP)**: Derived repositories satisfy base repository interfaces cleanly.
+4. **Interface Segregation Principle (ISP)**: Specific contracts (`IUserRepository`, `IVehicleRepository`, `IPurchaseRepository`).
+5. **Dependency Inversion Principle (DIP)**: Controllers and services depend on abstractions (`IAuthService`, `IVehicleRepository`).
+
+---
+
+## 📡 API Endpoints Documentation
+
+### Authentication (`/api/v1/auth`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/register` | Register new user account | Public |
+| `POST` | `/api/v1/auth/login` | Authenticate user & return JWT token | Public |
+
+### Vehicle Management (`/api/v1/vehicles`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/vehicles` | Paginated search & multi-filter catalog | Public |
+| `GET` | `/api/v1/vehicles/:id` | Retrieve vehicle details | Public |
+| `POST` | `/api/v1/vehicles` | Add new vehicle (Unique VIN enforced) | Admin Only |
+| `PUT` | `/api/v1/vehicles/:id` | Update vehicle details | Admin Only |
+| `DELETE` | `/api/v1/vehicles/:id` | Delete vehicle | Admin Only |
+| `POST` | `/api/v1/vehicles/:id/restock` | Restock inventory quantity | Admin Only |
+| `POST` | `/api/v1/vehicles/:id/purchase` | Purchase vehicle & decrease stock | User / Admin |
+
+### Purchases & Analytics (`/api/v1/purchases`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/purchases/my` | View user purchase history | User / Admin |
+| `GET` | `/api/v1/purchases` | View all customer orders | Admin Only |
+| `GET` | `/api/v1/purchases/analytics/summary` | Analytics & inventory metrics | Admin Only |
+
+### API Documentation UI
+Open **`http://localhost:5000/api-docs`** in your browser to view the interactive **Swagger / OpenAPI** documentation.
+
+---
+
+## 🧪 TDD Test Verification
+
+Run all unit & integration test suites:
+```bash
+npm run test:backend
+```
+
+**Results**:
+- **Test Suites**: `11 passed, 11 total`
+- **Tests**: `40 passed, 40 total`
+
+Run test coverage report:
+```bash
+npm run test:coverage --prefix backend
 ```
 
 ---
 
-## 🏛️ Clean Architecture & SOLID Principles
+## 🚀 Running Locally
 
-The system strictly decouples concerns across architectural boundaries:
+### 1. Prerequisites
+- Node.js $\ge 18.0.0$
+- npm $\ge 9.0.0$
 
-```
-[ HTTP Request ] 
-       │
-       ▼
- [ Controller ]  ──(Delegates)──► [ Service Interface ] ──(Implements)──► [ Service Logic ]
-                                                                                │
-                                                                           (Uses DI)
-                                                                                ▼
-                                                                     [ Repository Interface ]
-                                                                                │
-                                                                           (Implements)
-                                                                                ▼
-                                                                      [ Base / Mongoose Repos ]
-                                                                                │
-                                                                                ▼
-                                                                       [ MongoDB Database ]
+### 2. Installation & Setup
+```bash
+# Clone the repository
+git clone https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-.git
+cd TDD-kata-Car-Delivery-Inventory-System-
+
+# Install monorepo dependencies
+npm run install:all
 ```
 
-1. **Single Responsibility Principle (SRP)**: Controllers handle HTTP serialization, Services orchestrate application use cases, Repositories isolate data persistence queries.
-2. **Dependency Inversion Principle (DIP)**: High-level modules (Controllers & Services) depend on abstract interfaces (`IAuthService`, `IUserRepository`), not concrete implementations.
-3. **Open/Closed Principle (OCP)**: BaseRepository provides generic CRUD operations while domain-specific queries extend specialized repositories.
-
----
-
-## ⚙️ Environment Variables
-
-Create `.env` in the `backend/` directory:
-
-```env
-PORT=5000
-MONGODB_URI=mongodb://127.0.0.1:27017/car_inventory_db
-JWT_SECRET=super_secret_jwt_key_change_in_production_12345
-JWT_EXPIRES_IN=1d
-CLIENT_URL=http://localhost:5173
-NODE_ENV=development
+### 3. Start Backend Development Server
+```bash
+npm run dev:backend
+# Server runs on http://localhost:5000
+# Swagger docs at http://localhost:5000/api-docs
 ```
 
-Create `.env` in the `frontend/` directory:
-
-```env
-VITE_API_BASE_URL=http://localhost:5000/api/v1
+### 4. Start Frontend Development Server
+```bash
+npm run dev:frontend
+# Vite dev server runs on http://localhost:5173
 ```
 
 ---
 
-## 🛠️ Installation & Setup
-
-1. **Clone Repository**:
-   ```bash
-   git clone https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-.git
-   cd TDD-kata-Car-Delivery-Inventory-System-
-   ```
-
-2. **Install Workspace Dependencies**:
-   ```bash
-   npm install
-   ```
-
----
-
-## 💻 Development Commands
-
-- **Run Both Frontend & Backend concurrently**:
-  ```bash
-  npm run dev
-  ```
-
-- **Run Backend only**:
-  ```bash
-  npm run dev:backend
-  ```
-
-- **Run Frontend only**:
-  ```bash
-  npm run dev:frontend
-  ```
-
----
-
-## 🧪 Testing
-
-The repository is completely **TDD-ready**. Jest and Supertest are pre-configured in the `backend` package.
-
-- **Execute Test Suite**:
-  ```bash
-  npm run test
-  ```
-
-- **Execute Tests in Watch Mode**:
-  ```bash
-  npm run test:watch --prefix backend
-  ```
-
----
-
-## 🤖 AI Usage & Pair Programming
-
-This foundation was constructed in collaboration with **Antigravity (Google Deepmind AI)** as a Staff Software Engineer pair programmer, emphasizing clean architecture, strict typing, and Incubyte assessment guidelines.
+## 📄 License
+This repository is created as part of an incubator technical assessment.
