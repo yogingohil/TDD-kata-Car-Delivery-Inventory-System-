@@ -1,7 +1,10 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { VehicleModel } from '../models/vehicle.model.js';
+import { UserModel } from '../models/user.model.js';
 import { VehicleStatus } from '../interfaces/vehicle.interface.js';
+import { UserRole } from '../constants/roles.enum.js';
+import { PasswordUtil } from './password.util.js';
 
 dotenv.config();
 
@@ -129,7 +132,36 @@ async function seedDatabase() {
       );
     }
 
-    console.log('Successfully seeded sample vehicles into MongoDB Atlas!');
+    console.log('Seeding default user accounts...');
+    const customerPassword = await PasswordUtil.hashPassword('Password123!');
+    await UserModel.updateOne(
+      { email: 'yogin@example.com' },
+      {
+        $set: {
+          name: 'Yogin Gohil',
+          email: 'yogin@example.com',
+          password: customerPassword,
+          role: UserRole.USER,
+        },
+      },
+      { upsert: true },
+    );
+
+    const adminPassword = await PasswordUtil.hashPassword('AdminPassword123!');
+    await UserModel.updateOne(
+      { email: 'admin@example.com' },
+      {
+        $set: {
+          name: 'Apex Admin',
+          email: 'admin@example.com',
+          password: adminPassword,
+          role: UserRole.ADMIN,
+        },
+      },
+      { upsert: true },
+    );
+
+    console.log('Successfully seeded sample vehicles and user accounts into MongoDB Atlas!');
     process.exit(0);
   } catch (error) {
     console.error('Error seeding database:', error);
