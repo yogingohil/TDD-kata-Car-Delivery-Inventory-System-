@@ -4,6 +4,16 @@ An enterprise-grade, production-ready Car Delivery & Inventory Management System
 
 ---
 
+## 🔗 Submission Links for Incubyte Evaluators
+
+- 📁 **GitHub Repository**: [https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-](https://github.com/yogingohil/TDD-kata-Car-Delivery-Inventory-System-)
+- 📜 **Swagger API Documentation**: `http://localhost:5000/api-docs`
+- 🔐 **Demo Evaluator Credentials**:
+  - **Customer Account**: `yogin@example.com` / `Password123!`
+  - **Administrator Account**: `admin@example.com` / `AdminPassword123!`
+
+---
+
 ## 🌟 Tech Stack
 
 ### Frontend
