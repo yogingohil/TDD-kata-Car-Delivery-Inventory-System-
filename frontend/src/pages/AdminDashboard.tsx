@@ -477,6 +477,54 @@ export const AdminDashboard: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Engine Capacity</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 4.0L V8 Biturbo"
+                  value={formData.engineCapacity}
+                  onChange={(e) => setFormData({ ...formData, engineCapacity: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Transmission</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. PDK Automatic / 8-Speed"
+                  value={formData.transmission}
+                  onChange={(e) => setFormData({ ...formData, transmission: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Fuel Type</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Gasoline / Hybrid / Electric"
+                  value={formData.fuelType}
+                  onChange={(e) => setFormData({ ...formData, fuelType: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Mileage (Miles)</label>
+                <input
+                  type="number"
+                  required
+                  min={0}
+                  value={formData.mileage}
+                  onChange={(e) => setFormData({ ...formData, mileage: parseInt(e.target.value) || 0 })}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white"
+                />
+              </div>
+
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-slate-400 mb-1">Vehicle Image URL</label>
                 <input
