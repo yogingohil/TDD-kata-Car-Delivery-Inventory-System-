@@ -138,6 +138,7 @@ export const AdminDashboard: React.FC = () => {
               engineCapacity: '3.0L V6',
               price: 75000,
               quantity: 5,
+              image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80',
               description: '',
             });
             setShowAddModal(true);
@@ -472,6 +473,17 @@ export const AdminDashboard: React.FC = () => {
                   required
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Vehicle Image URL</label>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/... or image link"
+                  value={formData.image || ''}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white"
                 />
               </div>
