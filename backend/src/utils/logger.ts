@@ -2,7 +2,7 @@ import winston from 'winston';
 
 const { combine, timestamp, printf, colorize, json } = winston.format;
 
-const logFormat = printf(({ level, message, timestamp, ...metadata }) => {
+const logFormat = printf(({ level, message, timestamp, ...metadata }: Record<string, any>) => {
   let msg = `${timestamp} [${level}]: ${message}`;
   if (Object.keys(metadata).length > 0) {
     msg += ` ${JSON.stringify(metadata)}`;

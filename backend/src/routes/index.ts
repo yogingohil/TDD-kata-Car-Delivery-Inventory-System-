@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import authRoutes from './auth.routes.js';
 import vehicleRoutes from './vehicle.routes.js';
 import purchaseRoutes from './purchase.routes.js';
@@ -7,7 +7,7 @@ import { authenticateJwt } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.get('/health', (_req, res) => {
+router.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'healthy',
     service: 'Car Inventory System API',
@@ -15,7 +15,7 @@ router.get('/health', (_req, res) => {
   });
 });
 
-router.get('/health/protected-example', authenticateJwt, (_req, res) => {
+router.get('/health/protected-example', authenticateJwt, (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'healthy',
     message: 'Access granted to protected example route',

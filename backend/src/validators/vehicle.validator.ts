@@ -33,15 +33,15 @@ export const restockVehicleSchema = z.object({
 
 export const queryVehicleSchema = z.object({
   query: z.object({
-    page: z.string().optional().default('1').transform((val) => parseInt(val, 10)),
-    limit: z.string().optional().default('10').transform((val) => parseInt(val, 10)),
+    page: z.string().optional().default('1').transform((val: string) => parseInt(val, 10)),
+    limit: z.string().optional().default('10').transform((val: string) => parseInt(val, 10)),
     search: z.string().optional(),
     category: z.string().optional(),
     make: z.string().optional(),
     fuelType: z.string().optional(),
     transmission: z.string().optional(),
-    minPrice: z.string().optional().transform((val) => (val ? parseFloat(val) : undefined)),
-    maxPrice: z.string().optional().transform((val) => (val ? parseFloat(val) : undefined)),
+    minPrice: z.string().optional().transform((val?: string) => (val ? parseFloat(val) : undefined)),
+    maxPrice: z.string().optional().transform((val?: string) => (val ? parseFloat(val) : undefined)),
     status: z.string().optional(),
     sortBy: z.string().optional().default('createdAt'),
     sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
