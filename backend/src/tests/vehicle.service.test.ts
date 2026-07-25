@@ -40,7 +40,7 @@ describe('VehicleService Unit Tests with Mocks', () => {
 
   it('should calculate LOW_STOCK status when quantity is between 1 and 3', async () => {
     mockVehicleRepository.findByVin.mockResolvedValue(null);
-    mockVehicleRepository.create.mockImplementation(async (data) => ({
+    mockVehicleRepository.create.mockImplementation(async (data: any) => ({
       _id: new Types.ObjectId(),
       ...data,
     } as IVehicle));
@@ -53,5 +53,29 @@ describe('VehicleService Unit Tests with Mocks', () => {
     });
 
     expect(created.status).toBe(VehicleStatus.LOW_STOCK);
+  });
+
+  it('should calculate OUT_OF_STOCK status when quantity is 0', async () => {
+    mockVehicleRepository.findByVin.mockResolvedValue(null);
+    mockVehicleRepository.create.mockImplementation(async (data: any) => ({
+      _id: new Types.ObjectId(),
+      ...data,
+    } as IVehicle));
+
+    const created = await vehicleService.createVehicle({
+      make: 'Porsche',
+      model: 'GT3 RS',
+      vin: 'ZEROSTOCKVIN000',
+      quantity: 0,
+    });
+
+    expect(created.status).toBe(VehicleStatus.OUT_OF_STOCK);
+  });
+
+  it('should give discount when user purchase more than 2 vehicles', async () => {
+    const discountedPrice = (vehicleService as any).applyBulkDiscount
+      ? (vehicleService as any).applyBulkDiscount(10000, 3)
+      : 10000;
+    expect(discountedPrice).toBe(9000); // 10% discount applied
   });
 });
