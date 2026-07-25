@@ -121,7 +121,7 @@ async function seedDatabase() {
     }
 
     console.log('Connecting to MongoDB Atlas...');
-    await mongoose.connect(mongoUri);
+    await mongoose.connect(mongoUri, { dbName: 'car_inventory_db' });
 
     console.log('Seeding initial vehicle inventory...');
     for (const vehicleData of sampleVehicles) {
