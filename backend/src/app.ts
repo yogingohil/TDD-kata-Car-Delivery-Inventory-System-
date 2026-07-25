@@ -12,6 +12,9 @@ import { swaggerSpec } from './config/swagger.js';
 
 const app: Application = express();
 
+// Trust reverse proxy (Render, Vercel, AWS) for express-rate-limit & X-Forwarded-For IP resolution
+app.set('trust proxy', 1);
+
 // Security & Parsing Middlewares
 app.use(helmet());
 app.use(requestIdMiddleware);
