@@ -76,4 +76,13 @@ describe('VehicleService Unit Tests with Mocks', () => {
     const discountedPrice = vehicleService.applyBulkDiscount(10000, 3);
     expect(discountedPrice).toBe(9000); // 10% discount applied
   });
+  
+  it('should give 15% discount for ADMIN for purchases luxury above $100k',()=>{
+    const finalDiscount= vehicleService.vipDiscount(200000,'ADMIN');
+    expect(finalDiscount).toBe(170000);
+  })
+    it('should calculate 10% discount for regualr customer for buying luxury car above $100k',()=>{
+      const finalPrice = vehicleService.vipDiscount(200000,'USER')
+      expect(finalPrice).toBe(180000);
+    });
 });

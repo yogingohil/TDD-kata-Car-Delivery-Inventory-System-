@@ -18,6 +18,16 @@ export class VehicleService implements IVehicleService {
   return unitPrice ;
   }
   
+  public vipDiscount(price: number, role: string){
+    let discount=0;
+    if(price>=100000){
+      discount+=10;
+    }
+    if(role=='ADMIN'){
+      discount+=5;
+    }
+    return price-price*(discount/100);
+  }
   public async createVehicle(data: Partial<IVehicle>): Promise<IVehicle> {
     if (!data.vin) {
       throw new AppError('VIN is required', HttpStatus.BAD_REQUEST);
