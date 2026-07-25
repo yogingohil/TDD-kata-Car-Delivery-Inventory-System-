@@ -18,7 +18,7 @@ export class VehicleService implements IVehicleService {
   return unitPrice ;
   }
   
-  public vipDiscount(price: number, role: string){
+  public vipDiscount(price: number, role: string) : number{
     let discount=0;
     if(price>=100000){
       discount+=10;
