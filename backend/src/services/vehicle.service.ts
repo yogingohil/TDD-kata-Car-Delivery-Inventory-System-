@@ -11,6 +11,13 @@ export class VehicleService implements IVehicleService {
     return this.vehicleRepository;
   }
 
+  public applyBulkDiscount(unitPrice: number, quantity: number): number {
+  if (quantity >= 3) {
+    return unitPrice * 0.9; // 10% discount
+  }
+  return unitPrice ;
+  }
+  
   public async createVehicle(data: Partial<IVehicle>): Promise<IVehicle> {
     if (!data.vin) {
       throw new AppError('VIN is required', HttpStatus.BAD_REQUEST);

@@ -72,10 +72,8 @@ describe('VehicleService Unit Tests with Mocks', () => {
     expect(created.status).toBe(VehicleStatus.OUT_OF_STOCK);
   });
 
-  it('should give discount when user purchase more than 2 vehicles', async () => {
-    const discountedPrice = (vehicleService as any).applyBulkDiscount
-      ? (vehicleService as any).applyBulkDiscount(10000, 3)
-      : 10000;
+  it('should give 10% discount when user purchases 3 or more vehicles', async () => {
+    const discountedPrice = vehicleService.applyBulkDiscount(10000, 3);
     expect(discountedPrice).toBe(9000); // 10% discount applied
   });
 });
