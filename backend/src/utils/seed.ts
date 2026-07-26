@@ -12,8 +12,9 @@ import { VehicleStatus } from '../interfaces/vehicle.interface.js';
 import { UserRole } from '../constants/roles.enum.js';
 import { PasswordUtil } from './password.util.js';
 import { env } from '../config/env.config.js';
+import { logger } from './logger.js';
 
-const sampleVehicles = [
+export const sampleVehicles = [
   {
     make: 'Porsche',
     model: '911 GT3 RS',
@@ -118,27 +119,20 @@ const sampleVehicles = [
   },
 ];
 
-async function seedDatabase() {
+export async function autoSeedIfEmpty(): Promise<void> {
   try {
-    const mongoUri = env.MONGODB_URI;
-    if (!mongoUri) {
-      throw new Error('MONGODB_URI environment variable is not defined');
+    const vehicleCount = await VehicleModel.countDocuments();
+    if (vehicleCount === 0) {
+      logger.info('📦 Vehicle collection empty. Auto-seeding initial luxury fleet into MongoDB...');
+      for (const vehicleData of sampleVehicles) {
+        await VehicleModel.updateOne(
+          { vin: vehicleData.vin },
+          { $set: vehicleData },
+          { upsert: true },
+        );
+      }
     }
 
-    console.log('Connecting to MongoDB Atlas at:', mongoUri.split('@')[1] || mongoUri);
-    await mongoose.connect(mongoUri, { dbName: 'car_inventory_db' });
-    console.log('Connected DB:', mongoose.connection.name);
-
-    console.log('Seeding initial vehicle inventory...');
-    for (const vehicleData of sampleVehicles) {
-      await VehicleModel.updateOne(
-        { vin: vehicleData.vin },
-        { $set: vehicleData },
-        { upsert: true },
-      );
-    }
-
-    console.log('Seeding default user accounts...');
     const customerPassword = await PasswordUtil.hashPassword('Password123!');
     await UserModel.updateOne(
       { email: 'yogin@example.com' },
@@ -167,6 +161,25 @@ async function seedDatabase() {
       { upsert: true },
     );
 
+    logger.info('✅ Database auto-seed check complete.');
+  } catch (error) {
+    logger.error('Failed to auto-seed database:', { error });
+  }
+}
+
+async function runStandaloneSeed() {
+  try {
+    const mongoUri = env.MONGODB_URI;
+    if (!mongoUri) {
+      throw new Error('MONGODB_URI environment variable is not defined');
+    }
+
+    console.log('Connecting to MongoDB Atlas at:', mongoUri.split('@')[1] || mongoUri);
+    await mongoose.connect(mongoUri, { dbName: 'car_inventory_db' });
+    console.log('Connected DB:', mongoose.connection.name);
+
+    await autoSeedIfEmpty();
+
     const count = await VehicleModel.countDocuments();
     console.log(`Successfully seeded ${count} vehicles and user accounts into MongoDB Atlas database [car_inventory_db]!`);
     process.exit(0);
@@ -176,4 +189,7 @@ async function seedDatabase() {
   }
 }
 
-seedDatabase();
+// Only execute standalone if invoked directly via CLI
+if (process.argv[1] && process.argv[1].includes('seed')) {
+  runStandaloneSeed();
+}
