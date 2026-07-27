@@ -32,6 +32,7 @@ export interface IVehicleService {
   updateVehicle(id: string, data: Partial<IVehicle>): Promise<IVehicle>;
   deleteVehicle(id: string): Promise<boolean>;
   restockVehicle(id: string, restockQuantity: number): Promise<IVehicle>;
+  applySpecificCatDiscount(categoryOrMake: string, price: number, discountPercentage: number): number;
 }
 
 export interface IPurchaseService {

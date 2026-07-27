@@ -10,7 +10,13 @@ export class VehicleService implements IVehicleService {
   public getVehicleRepository(): IVehicleRepository {
     return this.vehicleRepository;
   }
-
+  public applySpecificCatDiscount(categoryOrMake: string, price: number, discountPercentage: number = 10): number {
+    const normalizedTarget = (categoryOrMake || '').toLowerCase().trim();
+    if (normalizedTarget === 'bmw' || normalizedTarget === 'sports' || normalizedTarget === 'sedan') {
+      return price - price * (discountPercentage / 100);
+    }
+    return price;
+  }
   public applyBulkDiscount(unitPrice: number, quantity: number): number {
   if (quantity >= 3) {
     return unitPrice * 0.9; // 10% discount

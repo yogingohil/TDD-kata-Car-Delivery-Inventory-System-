@@ -85,4 +85,9 @@ describe('VehicleService Unit Tests with Mocks', () => {
       const finalPrice = vehicleService.vipDiscount(200000,'USER')
       expect(finalPrice).toBe(180000);
     });
+  it('should give 10% discount on particular category or make (e.g. BMW)', () => {
+    const catDiscount = vehicleService.applySpecificCatDiscount('bmw', 100000, 10);
+    expect(catDiscount).toBe(90000); // 10% off $100,000 = $90,000
+  });
+
 });
