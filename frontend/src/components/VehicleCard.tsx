@@ -19,9 +19,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
 
   // Category & Make Discount Logic (10% Discount for BMW / Sports / Sedan)
   const isEligibleForDiscount =
-    vehicle.make.toLowerCase().includes('bmw') ||
-    vehicle.category.toLowerCase() === 'sports' ||
-    vehicle.category.toLowerCase() === 'sedan';
+    (vehicle.make && vehicle.make.toLowerCase().includes('bmw')) ||
+    (vehicle.category && vehicle.category.toLowerCase() === 'sports') ||
+    (vehicle.category && vehicle.category.toLowerCase() === 'sedan');
 
   const discountedPrice = isEligibleForDiscount ? vehicle.price * 0.9 : vehicle.price;
 
@@ -70,18 +70,18 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
             alt={`${vehicle.make} ${vehicle.model}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+          <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-10">
             {getStatusBadge(vehicle.status, vehicle.quantity)}
             {isEligibleForDiscount && (
-              <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md bg-cyan-500 text-slate-950 shadow-lg animate-pulse">
-                ⚡ 10% OFF
+              <span className="px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 shadow-xl shadow-amber-500/30 border border-yellow-300">
+                🔥 10% DISCOUNT
               </span>
             )}
           </div>
 
           <button
             onClick={handleCompare}
-            className={`absolute top-3 left-3 px-2.5 py-1 text-[11px] font-bold rounded-lg backdrop-blur-md transition-all ${
+            className={`absolute top-3 left-3 px-2.5 py-1 text-[11px] font-bold rounded-lg backdrop-blur-md transition-all z-10 ${
               isCompared
                 ? 'bg-cyan-500 text-slate-950 shadow-md'
                 : 'bg-slate-950/80 text-slate-300 hover:text-white border border-slate-700'
@@ -129,7 +129,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
           <span className="text-xs text-slate-400 block">Price</span>
           {isEligibleForDiscount ? (
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-extrabold text-cyan-400">
+              <span className="text-xl font-extrabold text-amber-400">
                 {formatPrice(discountedPrice)}
               </span>
               <span className="text-xs text-slate-500 line-through">
