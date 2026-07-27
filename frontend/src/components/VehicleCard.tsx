@@ -17,6 +17,14 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
 
   const isCompared = compareList.some((v) => v._id === vehicle._id);
 
+  // Category & Make Discount Logic (10% Discount for BMW / Sports / Sedan)
+  const isEligibleForDiscount =
+    vehicle.make.toLowerCase().includes('bmw') ||
+    vehicle.category.toLowerCase() === 'sports' ||
+    vehicle.category.toLowerCase() === 'sedan';
+
+  const discountedPrice = isEligibleForDiscount ? vehicle.price * 0.9 : vehicle.price;
+
   const handleCompare = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isCompared) return;
@@ -62,8 +70,13 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
             alt={`${vehicle.make} ${vehicle.model}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute top-3 right-3 flex items-center gap-2">
+          <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
             {getStatusBadge(vehicle.status, vehicle.quantity)}
+            {isEligibleForDiscount && (
+              <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md bg-cyan-500 text-slate-950 shadow-lg animate-pulse">
+                ⚡ 10% OFF
+              </span>
+            )}
           </div>
 
           <button
@@ -114,9 +127,20 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
       <div className="px-5 pb-5 pt-0 flex items-center justify-between gap-3">
         <div>
           <span className="text-xs text-slate-400 block">Price</span>
-          <span className="text-xl font-extrabold text-white">
-            {formatPrice(vehicle.price)}
-          </span>
+          {isEligibleForDiscount ? (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl font-extrabold text-cyan-400">
+                {formatPrice(discountedPrice)}
+              </span>
+              <span className="text-xs text-slate-500 line-through">
+                {formatPrice(vehicle.price)}
+              </span>
+            </div>
+          ) : (
+            <span className="text-xl font-extrabold text-white">
+              {formatPrice(vehicle.price)}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -130,7 +154,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onPurchase })
           {onPurchase && (
             <button
               disabled={vehicle.quantity === 0}
-              onClick={() => onPurchase(vehicle)}
+              onClick={() => onPurchase({ ...vehicle, price: discountedPrice })}
               className="px-4 py-2 text-xs font-bold rounded-xl text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-md shadow-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:from-slate-800 disabled:to-slate-900 border border-transparent disabled:border-slate-800 transition-all"
             >
               {vehicle.quantity === 0 ? 'Out of Stock' : 'Purchase'}
