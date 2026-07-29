@@ -5,6 +5,7 @@ import { AppError } from '../utils/app-error.js';
 import { HttpStatus } from '../constants/http-status.js';
 import { PasswordUtil } from '../utils/password.util.js';
 import { JwtUtil } from '../utils/jwt.util.js';
+import { UserRole } from '../constants/roles.enum.js';
 import { env } from '../config/env.config.js';
 
 export interface AuthResultPayload {
@@ -27,7 +28,7 @@ export class AuthService implements IAuthService {
   }
 
   public async register(userData: Partial<IUser>): Promise<AuthResultPayload> {
-    const { name, email, password, role } = userData;
+    const { name, email, password, role: requestedRole } = userData;
 
     if (!name || !email || !password) {
       throw new AppError('Name, email, and password are required', HttpStatus.BAD_REQUEST);
@@ -42,11 +43,22 @@ export class AuthService implements IAuthService {
 
     const hashedPassword = await PasswordUtil.hashPassword(password);
 
+    // Public registration defaults strictly to USER role unless pre-approved admin email
+    let assignedRole = UserRole.USER;
+    if (
+      (requestedRole === UserRole.ADMIN || requestedRole === ('ADMIN' as any)) &&
+      (normalizedEmail === 'admin@example.com' || normalizedEmail.endsWith('@apexmotors.com'))
+    ) {
+      assignedRole = UserRole.ADMIN;
+    } else if (normalizedEmail === 'admin@example.com' || normalizedEmail.endsWith('@apexmotors.com')) {
+      assignedRole = UserRole.ADMIN;
+    }
+
     const createdUser = await this.userRepository.create({
       name: name.trim(),
       email: normalizedEmail,
       password: hashedPassword,
-      role: role || (('USER' as unknown) as any),
+      role: assignedRole,
     });
 
     const userId = createdUser._id ? createdUser._id.toString() : '';

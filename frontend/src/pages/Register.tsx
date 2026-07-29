@@ -8,7 +8,7 @@ export const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('USER');
+  const [role] = useState('USER');
   const [loading, setLoading] = useState(false);
 
   const { setAuth } = useAuthStore();
@@ -158,18 +158,12 @@ export const Register: React.FC = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              Account Role
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800 text-white focus:outline-none focus:border-cyan-500 transition-colors"
-            >
-              <option value="USER">Customer (User)</option>
-              <option value="ADMIN">Administrator (Admin)</option>
-            </select>
+          {/* Account Role Notice */}
+          <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between text-xs">
+            <span className="text-slate-400 font-medium">Default Account Type:</span>
+            <span className="px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold uppercase tracking-wider text-[11px]">
+              Customer (Client)
+            </span>
           </div>
 
           <button
